@@ -346,12 +346,12 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
             px={2}
             w="100%"
             fontFamily="Work sans"
-            d="flex"
+            display="flex"
             justifyContent={{ base: "space-between" }}
             alignItems="center"
           >
             <IconButton
-              d={{ base: "flex", md: "none" }}
+              display={{ base: "flex", md: "none" }}
               icon={<ArrowBackIcon />}
               onClick={() => setSelectedChat("")}
             />
@@ -375,8 +375,8 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
               ))}
           </Text>
           <Box
-            d="flex"
-            flexDir="column"
+            display="flex"
+            flexDirection="column"
             justifyContent="flex-end"
             p={3}
             bg="#E8E8E8"
