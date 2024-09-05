@@ -4,7 +4,8 @@
   "description": "Chatapp using mern and socket.io",
   "main": "server.js",
   "scripts": {
-    "start": "nodemon backend/server.js"
+    "start": "nodemon backend/server.js",
+    "build" : "npm install --legacy-peer-deps && npm install --legacy-peer-deps --prefix frontend && npm run build --prefix frontend"
   },
   "author": "Nitin yadav",
   "license": "ISC",
