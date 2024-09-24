@@ -27,9 +27,11 @@ import {
   DrawerOverlay,
 } from "@chakra-ui/modal";
 import { Tooltip } from "@chakra-ui/tooltip";
-import { BellIcon, ChevronDownIcon } from "@chakra-ui/icons";
+import { BellIcon ,ChevronDownIcon, PhoneIcon } from "@chakra-ui/icons";
+import { IconButton } from '@chakra-ui/react'
 import { Avatar } from "@chakra-ui/avatar";
-import { useHistory } from "react-router-dom";
+import {  useHistory } from "react-router-dom";
+import { Link } from '@chakra-ui/react'
 import { useState } from "react";
 import axios from "axios";
 import { useToast } from "@chakra-ui/toast";
@@ -101,6 +103,7 @@ const SideDrawer = () => {
       })
     }
   }
+  
   const accessChat =async(userId) =>{
     try {
       setLoadingChat(true);
@@ -159,7 +162,16 @@ const SideDrawer = () => {
             <MenuButton p="1">
               <BellIcon fontSize="2xl" m={1}/>
             </MenuButton>
-            {/* <MenuList></MenuList> */}
+            <Link href="https://videocalling11.netlify.app/" target="_blank">
+              <IconButton
+                  colorScheme='teal'
+                  aria-label='Call Segun'
+                  size='md'
+                  m = {1.5}
+                  icon={<PhoneIcon />}
+              />
+            </Link>
+            
           </Menu>
           <Menu>
             <MenuButton as={Button} rightIcon={<ChevronDownIcon/>}>
