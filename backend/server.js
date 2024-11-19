@@ -8,6 +8,7 @@ const chatRoutes = require('./routes/chatRoutes');
 const { errorHandler, notFound } = require('./middleware/errorMiddleware');
 const messageRoutes = require('./routes/messageRoutes');
 const path = require('path');  
+const admin = require("firebase-admin");
 
 dotenv.config();
 connectDB();

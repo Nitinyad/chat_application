@@ -5,6 +5,7 @@ const messageModel = mongoose.Schema(
         sender:{type : mongoose.Schema.Types.ObjectId , ref : "User"},
         content : {type : String , trim : true},
         chat : {type : mongoose.Schema.Types.ObjectId , ref : "Chat"},
+        scheduleTime: Date,
     },
     {
         timestamps : true,
@@ -18,6 +19,5 @@ Message.find({}).then(messages => {
   }).catch(error => {
     console.error(error);
   });
-
 
 module.exports = Message; 

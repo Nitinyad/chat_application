@@ -162,7 +162,7 @@ import {
   Box,
 } from "@chakra-ui/react";
 import axios from "axios";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { ChatState } from "../../context/ChatProvider";
 import UserBadgeItem from "../UserAvatar/UserBadgeItem";
 import UserListItem from "../UserAvatar/UserListItem";
@@ -192,6 +192,34 @@ const GroupChatModal = ({ children }) => {
 
     setSelectedUsers([...selectedUsers, userToAdd]);
   };
+  const debouncing = (callback, delay) => {
+    let timer;
+    return (...args) => {
+      return new Promise((resolve, reject) => {
+        if (timer) clearTimeout(timer);
+        timer = setTimeout(async () => {
+          try {
+            const result = await callback(...args);
+            resolve(result);
+          } catch (error) {
+            reject(error);
+          }
+        }, delay);
+      });
+    };
+  };
+
+
+  const searchUsers = useCallback( debouncing(async (query) => {
+    const config = {
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+        },
+      };
+      const { data } = await axios.get(`/api/user?search=${query}`, config);
+      console.log(data);
+    return data;
+  }, 1000) , []);
 
   const handleSearch = async (query) => {
     setSearch(query);
@@ -201,12 +229,14 @@ const GroupChatModal = ({ children }) => {
 
     try {
       setLoading(true);
-      const config = {
-        headers: {
-          Authorization: `Bearer ${user.token}`,
-        },
-      };
-      const { data } = await axios.get(`/api/user?search=${search}`, config);
+      // const config = {
+      //   headers: {
+      //     Authorization: `Bearer ${user.token}`,
+      //   },
+      // };
+      // const { data } = await axios.get(`/api/user?search=${search}`, config);
+      const data = await searchUsers(search);
+      console.log(data);
       setLoading(false);
       setSearchResult(data);
     } catch (error) {
@@ -224,6 +254,9 @@ const GroupChatModal = ({ children }) => {
   const handleDelete = (delUser) => {
     setSelectedUsers(selectedUsers.filter((sel) => sel._id !== delUser._id));
   };
+
+
+
 
   const handleSubmit = async () => {
     if (!groupChatName || !selectedUsers) {
@@ -243,14 +276,29 @@ const GroupChatModal = ({ children }) => {
           Authorization: `Bearer ${user.token}`,
         },
       };
-      const { data } = await axios.post(
-        `/api/chat/group`,
-        {
-          name: groupChatName,
-          users: JSON.stringify(selectedUsers.map((u) => u._id)),
-        },
-        config
-      );
+      // const { data } = await axios.post(
+      //   `/api/chat/group`,
+      //   {
+      //     name: groupChatName,
+      //     users: JSON.stringify(selectedUsers.map((u) => u._id)),
+      //   },
+      //   config
+      // );
+
+
+      const debouncedPost = debouncing(async () => {
+        return await axios.post(
+          `/api/chat/group`,
+          {
+            name: groupChatName,
+            users: JSON.stringify(selectedUsers.map((u) => u._id)),
+          },
+          config
+        );
+      }, 1000);
+
+      const {data} = await debouncedPost();
+
       setChats([data, ...chats]);
       onClose();
       toast({
@@ -300,7 +348,7 @@ const GroupChatModal = ({ children }) => {
               <Input
                 placeholder="Add Users eg: Nitin, Sajeet, etc"
                 mb={1}
-                onChange={(e) => handleSearch(e.target.value)}
+                onKeyUp = {(e) => handleSearch(e.target.value)}
               />
             </FormControl>
             <Box w="100%" display="flex" flexWrap="wrap">
