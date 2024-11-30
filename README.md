@@ -31,3 +31,10 @@ After optimisation of searching a users :
 
 ![debouncingfunctions](https://github.com/user-attachments/assets/74e5d79d-79d8-4e17-b576-874910778b5d)
 
+## Reference to these blogs and video : 
+ https://www.youtube.com/watch?v=jTU6bUxLGBA![image](https://github.com/user-attachments/assets/97ee5769-b43c-4c56-819c-5f87f733e59a)
+
+ https://www.fullstack.cafe/blog/websockets-interview-questions  ![image](https://github.com/user-attachments/assets/d91c16b7-5583-4069-99c7-9dfa7ec659a3)
+
+
+
