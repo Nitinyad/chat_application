@@ -1,11 +1,21 @@
-Models in Application : 
+## Comparison : 
+### Without using websockets : 
+### http protocol 
+![httpsprot](https://github.com/user-attachments/assets/8b56f7ac-63b1-4a8a-a47b-0198b36f6657)
+### Using websockets :
+Requesting the server with http protocol with upgradating the connection to "ws" websocket in the header.
+
+![websockets](https://github.com/user-attachments/assets/3a5125b0-e0fb-41cf-b281-8645a5ac21d2)
+
+
+## Models in Application : 
 
 ![chatmodels](https://github.com/user-attachments/assets/1b69877a-21c6-4ed4-9a34-d9c65357f9cd)
 
 
 ![controllerflow](https://github.com/user-attachments/assets/3e12dfbb-cd10-45c1-9374-62eedda5dc0f)
 
-
+## Some Optimisations : 
 Before the optimisation of search a users : 
 
 
