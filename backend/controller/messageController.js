@@ -2,6 +2,7 @@ const expressAsyncHandler = require("express-async-handler");
 const Message = require("../Models/messageModel");
 const User = require("../Models/userModel");
 const Chat = require("../Models/chatModel");
+const { isProfane, isToxic } = require("../utils/filter");
 
 
 const sendMessage = expressAsyncHandler(async(req,res)=>{
@@ -10,6 +11,18 @@ const sendMessage = expressAsyncHandler(async(req,res)=>{
     if(!content || !chatId){
         console.log('Invaild data passed into request')
         return res.sendStatus(400)
+    }
+
+    // Check for profane content BEFORE saving to database
+    const containsBadWord = await isProfane(content);
+    const isAbusive = await isToxic(content);
+    console.log("Message content:", content);
+    console.log("Profane:", containsBadWord, "Toxic:", isAbusive);
+
+    if (containsBadWord || isAbusive) {
+        return res.status(403).json({ 
+            error: "Message contains inappropriate content" 
+        });
     }
 
     var newMessage = {
@@ -53,5 +66,20 @@ const allMessages =expressAsyncHandler(async(req,res)=>{
     }
 })
 
+const processMessage = async (socket, message) => {
+    const containsBadWord = await isProfane(message.content); // ✅ now async again
+    const isAbusive = await isToxic(message.content);
+    console.log("Message content:", message.content);
+    console.log("Profane:", containsBadWord, "Toxic:", isAbusive);
 
-module.exports = {sendMessage , allMessages}
+    if (containsBadWord || isAbusive) {
+        socket.emit("messageBlocked", "Your message was flagged as abusive.");
+        return;
+    }
+
+    // Emit to all clients in the chat room if message is clean
+    socket.to(message.chat._id).emit("message recieved", message);
+};
+
+
+module.exports = {sendMessage , allMessages , processMessage}

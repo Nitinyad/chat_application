@@ -82,7 +82,7 @@ const createGroupChat = asyncHandler(async (req, res) => {
     return res.status(400).send({ message: "Please Fill all the feilds" });
   }
 
-  var users = JSON.parse(req.body.users);
+  var users = JSON.parse(req.body.users); // string to javascript object
 
   if (users.length < 2) {
     return res

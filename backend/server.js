@@ -9,12 +9,13 @@ const { errorHandler, notFound } = require('./middleware/errorMiddleware');
 const messageRoutes = require('./routes/messageRoutes');
 const path = require('path');  
 const admin = require("firebase-admin");
+const exp = require('constants');
+const { processMessage } = require("./controller/messageController");
 
 dotenv.config();
 connectDB();
 const app = express();
-app.use(express.json()) //to accept the JSON data
-
+app.use(express.json())
 
 
 
@@ -65,6 +66,10 @@ io.on("connection", (socket) => {
   socket.on("setup", (userData) => {
     socket.join(userData._id);
     socket.emit("connected");
+  });
+  socket.on("sendMessage", (message) => {
+    // Message is already filtered at API level, just broadcast to chat room
+    socket.to(message.chat._id).emit("message recieved", message);
   });
 
   socket.on("join chat", (room) => {

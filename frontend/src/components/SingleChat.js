@@ -189,12 +189,12 @@ import ProfileModal from "./miscellaneous/ProfileModal";
 import ScrollableChat from "./ScrollableChat";
 import Lottie from "react-lottie";
 import animationData from "../animations/typing.json";
-
 import io from "socket.io-client";
 import UpdateGroupChatModal from "./miscellaneous/UpdateGroupChatModal";
 import { ChatState } from "../context/ChatProvider";
 const ENDPOINT = "http://localhost:5000"; 
-var socket, selectedChatCompare;
+var socket;
+var selectedChatCompare;
 
 const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   const [messages, setMessages] = useState([]);
@@ -258,7 +258,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
             Authorization: `Bearer ${user.token}`,
           },
         };
-        setNewMessage("");
+        
         const { data } = await axios.post(
           "/api/message",
           {
@@ -267,17 +267,31 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
           },
           config
         );
-        socket.emit("new message", data);
+        
+        setNewMessage("");
+        socket.emit("sendMessage", data);
         setMessages([...messages, data]);
       } catch (error) {
-        toast({
-          title: "Error Occured!",
-          description: "Failed to send the Message",
-          status: "error",
-          duration: 5000,
-          isClosable: true,
-          position: "bottom",
-        });
+        if (error.response && error.response.status === 403) {
+          // Message was blocked due to inappropriate content
+          toast({
+            title: "Your Message was flagged as abusive",
+            description: "Failed to send the Message",
+            status: "error",
+            duration: 5000,
+            isClosable: true,
+            position: "top",
+          });
+        } else {
+          toast({
+            title: "Error Occured!",
+            description: "Failed to send the Message",
+            status: "error",
+            duration: 5000,
+            isClosable: true,
+            position: "bottom",
+          });
+        }
       }
     }
   };
@@ -290,7 +304,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     socket.on("stop typing", () => setIsTyping(false));
 
     // eslint-disable-next-line
-  }, []);
+  }, []);//this useeffect only render once when the componet mount
 
   useEffect(() => {
     fetchMessages();
