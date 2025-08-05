@@ -3,6 +3,7 @@ import { ChatState } from "../context/ChatProvider";
 import SideDrawer from "../components/miscellaneous/SideDrawer";
 import MyChats from "../components/MyChats";
 import ChatBox from "../components/ChatBox";
+import ChatbotButton from "../components/miscellaneous/ChatbotButton";
 import { useState } from "react";
 
 
@@ -30,6 +31,7 @@ export const Chatpage = () => {
         <ChatBox fetchAgain={fetchAgain} setFetchAgain={setFetchAgain}/>
         )}
       </Box>
+      <ChatbotButton />
     </div>
   )
 }

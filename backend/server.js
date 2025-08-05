@@ -11,11 +11,18 @@ const path = require('path');
 const admin = require("firebase-admin");
 const exp = require('constants');
 const { processMessage } = require("./controller/messageController");
+const SchedulerService = require('./services/schedulerService');
 
 dotenv.config();
 connectDB();
 const app = express();
 app.use(express.json())
+
+// Initialize scheduler service
+const schedulerService = new SchedulerService();
+
+// Make io available globally for scheduler service
+global.io = null;
 
 
 
@@ -58,6 +65,10 @@ const io = require("socket.io")(server, {
     // credentials: true,
   },
 });
+
+// Make io available globally for scheduler service
+global.io = io;
+app.set('io', io);
 
 
 
