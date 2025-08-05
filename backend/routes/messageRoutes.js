@@ -10,13 +10,13 @@ const {
 
 const router = express.Router()
 
-
-router.route('/:chatId').get(protect,allMessages)
-router.route('/').post(protect,sendMessage)
-
 // Scheduled message routes
 router.route('/schedule').post(protect, scheduleMessage)
 router.route('/scheduled').get(protect, getScheduledMessages)
 router.route('/scheduled/:messageId').delete(protect, cancelScheduledMessage)
+
+router.route('/:chatId').get(protect,allMessages)
+router.route('/').post(protect,sendMessage)
+
 
 module.exports = router;

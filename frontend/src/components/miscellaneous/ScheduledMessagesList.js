@@ -20,7 +20,7 @@ import {
 import { DeleteIcon, TimeIcon, InfoIcon } from '@chakra-ui/icons';
 import axios from 'axios';
 
-const ScheduledMessagesList = ({ selectedChat, isOpen, onClose }) => {
+const ScheduledMessagesList = ({ selectedChat, isOpen, onClose, refresh }) => {
   const [scheduledMessages, setScheduledMessages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(null);
@@ -96,6 +96,13 @@ const ScheduledMessagesList = ({ selectedChat, isOpen, onClose }) => {
       fetchScheduledMessages();
     }
   }, [isOpen, selectedChat]);
+
+  // Add this effect to refetch when 'refresh' changes
+  useEffect(() => {
+    if (isOpen && selectedChat) {
+      fetchScheduledMessages();
+    }
+  }, [refresh]);
 
   const formatScheduledTime = (scheduledTime) => {
     const date = new Date(scheduledTime);

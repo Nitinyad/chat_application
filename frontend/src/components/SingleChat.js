@@ -207,6 +207,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   const [istyping, setIsTyping] = useState(false);
   const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false);
   const [isScheduledListOpen, setIsScheduledListOpen] = useState(false);
+  const [scheduledListRefresh, setScheduledListRefresh] = useState(0);
   const toast = useToast();
 
   const defaultOptions = {
@@ -318,21 +319,28 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   }, [selectedChat]);
 
   useEffect(() => {
-    socket.on("message recieved", (newMessageRecieved) => {
+    if (!socket) return;
+
+    const handleMessageReceived = (newMessageRecieved) => {
       if (
-        !selectedChatCompare || // if chat is not selected or doesn't match current chat
+        !selectedChatCompare ||
         selectedChatCompare._id !== newMessageRecieved.chat._id
       ) {
-        // get the notification
-        if (!notification.includes(newMessageRecieved)) {
-          setNotification([newMessageRecieved, ...notification]);
-          setFetchAgain(!fetchAgain);
+        if (!notification.some(msg => msg._id === newMessageRecieved._id)) {
+          setNotification((prev) => [newMessageRecieved, ...prev]);
+          setFetchAgain((prev) => !prev);
         }
       } else {
-        setMessages([...messages, newMessageRecieved]);
+        setMessages((prev) => [...prev, newMessageRecieved]);
       }
-    });
-  });
+    };
+
+    socket.on("message recieved", handleMessageReceived);
+
+    return () => {
+      socket.off("message recieved", handleMessageReceived);
+    };
+  }, [selectedChat, notification, fetchAgain]);
 
   const typingHandler = (e) => {
     setNewMessage(e.target.value);
@@ -438,15 +446,6 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
               )}
               
               <HStack spacing={2}>
-                <Input
-                  variant="filled"
-                  bg="#E0E0E0"
-                  placeholder="Enter a message.."
-                  value={newMessage}
-                  onChange={typingHandler}
-                  flex={1}
-                />
-                
                 <Tooltip label="Schedule Message" placement="top">
                   <IconButton
                     icon={<CalendarIcon />}
@@ -468,6 +467,15 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                     aria-label="View scheduled messages"
                   />
                 </Tooltip>
+                
+                <Input
+                  variant="filled"
+                  bg="#E0E0E0"
+                  placeholder="Enter a message.."
+                  value={newMessage}
+                  onChange={typingHandler}
+                  flex={1}
+                />
               </HStack>
             </FormControl>
           </Box>
@@ -487,7 +495,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         onClose={() => setIsScheduleModalOpen(false)}
         selectedChat={selectedChat}
         onScheduleSuccess={() => {
-          // Optionally refresh scheduled messages list
+          setScheduledListRefresh((prev) => prev + 1);
         }}
       />
 
@@ -496,6 +504,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         isOpen={isScheduledListOpen}
         onClose={() => setIsScheduledListOpen(false)}
         selectedChat={selectedChat}
+        refresh={scheduledListRefresh}
       />
     </>
   );
